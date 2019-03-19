@@ -1,0 +1,34 @@
+---
+- !user ted     # no group
+- !user carol   # developer
+- !user bob     # devops
+- !user alice   # sec_ops
+
+- !group developers
+- !group devops
+- !group sec_ops
+
+# Grant the less-powerful groups to the more-powerful groups
+- !grant
+  role: !group developers
+  member: !group devops
+
+- !grant
+  role: !group devops
+  member: !group sec_ops
+
+# Grant group roles to users
+- !grant
+  role: !group developers
+  members: 
+    - !user carol
+
+- !grant
+  role: !group devops 
+  members: 
+    - !user bob
+
+- !grant
+  role: !group sec_ops
+  members:
+    - !user alice

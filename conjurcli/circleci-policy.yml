@@ -1,0 +1,36 @@
+---
+- !policy
+  id: circleci
+  owner: !group devops
+  body:
+  - &variables
+    - !variable heroku_login
+    - !variable heroku_apikey
+
+  - !layer
+
+  - !host executor
+  - !host master
+
+  - !grant
+    role: !layer
+    member: !host executor
+
+  - !permit
+    role: !layer
+    privileges: [ read, execute ]
+    resource: *variables
+
+  - !host-factory
+    id: executor_factory
+    layers: [ !layer ]
+
+  - !deny
+    role: !host executor
+    privileges: [ read, execute ]
+    resource: !host-factory executor_factory
+
+  - !permit
+    role: !host master
+    privileges: [ read, execute ]
+    resource: !host-factory executor_factory

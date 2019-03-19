@@ -1,0 +1,6 @@
+---
+account: mydemo
+plugins:
+- policy
+appliance_url: https://conjur.cyberark-demo.com/api
+cert_file: "/root/conjur-mydemo.pem"
