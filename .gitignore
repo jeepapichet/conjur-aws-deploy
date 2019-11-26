@@ -4,5 +4,7 @@
 .cache
 my-*
 *.pem
+*.swp
 backup
 v4
+v4/*
