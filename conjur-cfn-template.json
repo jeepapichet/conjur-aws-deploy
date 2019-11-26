@@ -8,7 +8,7 @@
       },
       "KeyName" : {
          "Type":"String",
-         "Default":"capichet-aws-keypair"
+         "Default":"my-aws-keypair"
       },
       "DAPInstanceSecurityGroups" : {
          "Type":"String",
