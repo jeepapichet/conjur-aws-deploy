@@ -1,0 +1,96 @@
+{
+   "AWSTemplateFormatVersion" : "2010-09-09",
+   "Description" : "Conjur Instance",
+   "Parameters": {
+      "DAPImageId" : {
+         "Type":"String",
+         "Default":"ami-0384a03da0592384c"
+      },
+      "KeyName" : {
+         "Type":"String",
+         "Default":"capichet-aws-keypair"
+      },
+      "DAPInstanceSecurityGroups" : {
+         "Type":"String",
+         "Default":"sg-0a3036a0771b68179"
+      },
+      "DAPInstanceSubnetId" : {
+         "Type":"String",
+         "Default":"subnet-ee2f259b"
+      },
+      "DAPInstanceType" : {
+         "Type":"String",
+         "Default":"t3.small"
+      },
+      "DAPHostZoneName" : {
+         "Type":"String",
+         "Default":"yourdomain.com."
+      },
+      "DAPDNSName" : {
+         "Type":"String",
+         "Default":"dap.yourdomain.com"
+      },
+      "DAPAdminPassword" : {
+         "Type":"String",
+         "Default":"P@ssw0rd123!"
+      }
+   },
+
+   "Resources" : {
+      "ConjurInstance" : {
+         "Type" : "AWS::EC2::Instance",
+         "Properties" : {
+            "ImageId" : {
+               "Ref": "DAPImageId"
+            },
+            "KeyName" : {
+               "Ref": "KeyName"
+            },
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "DAPMaster"
+                }
+            ],
+            "SecurityGroupIds": [ {
+               "Ref": "DAPInstanceSecurityGroups"
+            } ],
+            "SubnetId": {
+               "Ref": "DAPInstanceSubnetId"
+            },
+            "InstanceType": {
+               "Ref": "DAPInstanceType"
+            },
+            "UserData": {"Fn::Base64": {"Fn::Join":["", [
+    "#!/bin/bash\n",
+    "sleep 5\n",
+    "until [ \"`/usr/bin/docker inspect -f {{.State.Running}} conjur-appliance`\"==\"true\" ]; do\n",
+    "    sleep 1\n",
+    "done\n",
+    "sleep 10\n",
+    "hostname=", {"Ref" : "DAPDNSName"}, "\n",
+    "password=", {"Ref" : "DAPAdminPassword"}, "\n",
+    "orgaccount=demo\n",
+    "docker exec conjur-appliance evoke configure master --accept-eula -h $hostname -p $password $orgaccount\n"
+            ]]}}
+         }
+      },
+      "ConjurDNSRecord" : {
+          "Type" : "AWS::Route53::RecordSet",
+          "Properties" : {
+             "Comment" : "Auto update from CFN",
+             "HostedZoneName" : {
+               "Ref": "DAPHostZoneName"
+             },
+             "Name" : {
+               "Ref": "DAPDNSName"
+             },
+             "TTL" : "60",
+             "Type" : "A",
+             "ResourceRecords" : [
+                { "Fn::GetAtt" : [ "ConjurInstance", "PublicIp" ] }
+             ]
+          }
+      }
+   }
+}

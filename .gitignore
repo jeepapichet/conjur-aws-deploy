@@ -1,1 +1,8 @@
-conjurcli/.netrc
+.bash_history
+.conjurrc
+.netrc
+.cache
+my-*
+*.pem
+backup
+v4

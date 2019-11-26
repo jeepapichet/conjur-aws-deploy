@@ -25,12 +25,8 @@
     id: executor_factory
     layers: [ !layer ]
 
-  - !deny
-    role: !host executor
-    privileges: [ read, execute ]
-    resource: !host-factory executor_factory
-
   - !permit
     role: !host master
     privileges: [ read, execute ]
     resource: !host-factory executor_factory
+

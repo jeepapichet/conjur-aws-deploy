@@ -1,5 +1,0 @@
-# Demo policy file
-
-# Environment policies
-- !include users-policy.yml
-- !include circleci-policy.yml

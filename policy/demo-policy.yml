@@ -1,4 +1,5 @@
----
+# Demo policy file
+
 - !user ted     # no group
 - !user carol   # developer
 - !user bob     # devops
